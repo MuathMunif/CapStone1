@@ -29,8 +29,12 @@ public class MerchantStockController {
         if(errors.hasErrors()){
             return ResponseEntity.status(400).body(new ApiRespnse(Objects.requireNonNull(errors.getFieldError()).getDefaultMessage()));
         }
-        merchantStockService.addMerchantStockModel(merchantStockModel);
-        return ResponseEntity.status(200).body(new ApiRespnse("Merchant Stock Added Successfully"));
+        boolean isAdded = merchantStockService.addMerchantStockModel(merchantStockModel);
+        if(isAdded){
+            return ResponseEntity.status(200).body(new ApiRespnse("Merchant Stock Added Successfully"));
+        }
+        return ResponseEntity.status(400).body(new ApiRespnse("Merchant Stock Not Added The MerchantID not Exist or productId not Exist"));
+
     }
 
 
@@ -54,5 +58,15 @@ public class MerchantStockController {
             return ResponseEntity.status(200).body(new ApiRespnse("Merchant Stock Deleted"));
         }
         return ResponseEntity.status(400).body(new ApiRespnse("Merchant Stock Not Deleted"));
+    }
+
+
+    @PutMapping("/add-stock/{merchantId}/{productId}/{quantity}")
+    public ResponseEntity<?> addStock( @PathVariable String merchantId, @PathVariable String productId, @PathVariable int quantity){
+        String response = merchantStockService.addStock( merchantId, productId, quantity);
+        if (response.equals("Stock added successfully")){
+            return ResponseEntity.status(200).body(new ApiRespnse("Stock Added Successfully"));
+        }
+        return ResponseEntity.status(400).body(new ApiRespnse(response));
     }
 }

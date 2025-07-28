@@ -1,12 +1,21 @@
 package seu.capstone1.Service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import seu.capstone1.Model.MerchantModel;
+import seu.capstone1.Model.MerchantStockModel;
+import seu.capstone1.Model.ProductModel;
 import seu.capstone1.Model.UserModel;
 
 import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+
+    private final MerchantService merchantService;
+    private final ProductService productService;
+    private final MerchantStockService merchantStockService;
 
     ArrayList<UserModel> users = new ArrayList<>();
 
@@ -38,6 +47,77 @@ public class UserService {
         }
         return false;
     }
+
+public String buyProduct(String id , String productId, String merchantId) {
+
+        boolean isProductExist = false;
+        boolean isMerchantExist = false;
+        boolean isUserExist = false;
+        boolean isMerchantStockExist = false;
+
+        UserModel user = null;
+        ProductModel productF = null;
+        MerchantModel merchantF = null;
+        MerchantStockModel merchantStockF = null;
+
+
+        for (int i = 0; i < productService.products.size(); i++) {
+            if (productService.products.get(i).getId().equals(productId)) {
+                productF = productService.products.get(i);
+                isProductExist = true;
+            }
+        }
+        if (!isProductExist) {
+            return "No product found for id: " + productId;
+        }
+
+        for (int i = 0; i < merchantService.merchants.size(); i++) {
+            if (merchantService.merchants.get(i).getId().equals(merchantId)) {
+                merchantF = merchantService.merchants.get(i);
+                isMerchantExist = true;
+            }
+        }
+        if (!isMerchantExist) {
+            return "No merchant found for id: " + merchantId;
+        }
+
+
+
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(id)) {
+                user = users.get(i);
+                isUserExist = true;
+            }
+        }
+        if (!isUserExist) {
+            return "No User found for id: " + id;
+        }
+
+       for (int i = 0; i < merchantStockService.merchantStockModels.size(); i++) {
+           if (merchantStockService.merchantStockModels.get(i).getMerchantId().equals(merchantId) && merchantStockService.merchantStockModels.get(i).getProductId().equals(productId)) {
+               merchantStockF = merchantStockService.merchantStockModels.get(i);
+               isMerchantStockExist = true;
+           }
+       }
+       if (!isMerchantStockExist) {
+           return "No merchant stock found for id: " + merchantId;
+       }
+
+       if (merchantStockF.getStock() <= 0) {
+           return "Product is out of stock";
+       }
+
+       if (user.getBalance() < productF.getPrice()) {
+           return "You don't have enough money";
+       }
+
+       merchantStockF.setStock(merchantStockF.getStock() - 1);
+       user.setBalance(user.getBalance() - productF.getPrice());
+       productF.setSoldCount(productF.getSoldCount() + 1);
+
+
+        return "Purchase successful";
+}
 
 
 }

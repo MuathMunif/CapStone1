@@ -53,4 +53,14 @@ public class UserController {
         }
         return ResponseEntity.status(400).body(new ApiRespnse("User Not found"));
     }
+
+
+    @PutMapping("/buy-product/{userid}/{productid}/{merchantid}")
+    public ResponseEntity<?> buyProduct(@PathVariable String userid,@PathVariable String productid,@PathVariable String merchantid){
+        String response = userService.buyProduct(userid,productid,merchantid);
+        if(response.equals("Purchase successful")){
+            return ResponseEntity.status(200).body(new ApiRespnse("Purchase successful"));
+        }
+        return ResponseEntity.status(400).body(new ApiRespnse(response));
+    }
 }
