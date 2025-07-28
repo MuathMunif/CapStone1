@@ -81,8 +81,6 @@ public String buyProduct(String id , String productId, String merchantId) {
             return "No merchant found for id: " + merchantId;
         }
 
-
-
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getId().equals(id)) {
                 user = users.get(i);
@@ -92,6 +90,10 @@ public String buyProduct(String id , String productId, String merchantId) {
         if (!isUserExist) {
             return "No User found for id: " + id;
         }
+
+        if (!user.isActive()){
+            return "User is not active";
+    }
 
        for (int i = 0; i < merchantStockService.merchantStockModels.size(); i++) {
            if (merchantStockService.merchantStockModels.get(i).getMerchantId().equals(merchantId) && merchantStockService.merchantStockModels.get(i).getProductId().equals(productId)) {
@@ -117,6 +119,66 @@ public String buyProduct(String id , String productId, String merchantId) {
 
 
         return "Purchase successful";
+}
+
+
+//Admin Can De Active user
+public String adminDeActiveUser(String adminId , String userId) {
+        boolean isAdmin = false;
+        boolean isUserExist = false;
+        UserModel user = null;
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(adminId) && users.get(i).getRole().equals("Admin")) {
+                isAdmin = true;
+            }
+        }
+        if (!isAdmin) {
+            return "No admin found for id: " + adminId;
+        }
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId().equals(userId)) {
+                user = users.get(i);
+                isUserExist = true;
+            }
+        }
+        if (!isUserExist) {
+            return "No User found for id: " + userId;
+        }
+        user.setActive(false);
+        return "Deactivated successful";
+}
+
+
+//Admin can get Active users and not Active users
+public ArrayList<UserModel> getUsersByStatus(String adminId , String search) {
+    ArrayList<UserModel> usersFound = new ArrayList<>();
+
+    boolean isAdmin = false;
+    for (UserModel user : users) {
+        if (user.getId().equals(adminId) && user.getRole().equals("Admin")) {
+            isAdmin = true;
+            break;
+        }
+    }
+
+    if (!isAdmin) {
+        return null;
+    }
+
+    if (!search.equalsIgnoreCase("active") && !search.equalsIgnoreCase("notActive")) {
+        return null;
+    }
+
+
+    for (UserModel user : users) {
+        if (search.equalsIgnoreCase("active") && user.isActive()) {
+            usersFound.add(user);
+        } else if (search.equalsIgnoreCase("notActive") && !user.isActive()) {
+            usersFound.add(user);
+        }
+    }
+
+    return usersFound;
 }
 
 

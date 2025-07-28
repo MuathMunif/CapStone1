@@ -63,4 +63,32 @@ public class UserController {
         }
         return ResponseEntity.status(400).body(new ApiRespnse(response));
     }
+
+
+    //Extra for admin
+    @PutMapping("/admin-de-active-user/{adminid}/{userid}")
+    public ResponseEntity<?> adminDeActiveUser(@PathVariable String adminid,@PathVariable String userid){
+        String response = userService.adminDeActiveUser(adminid,userid);
+        if(response.equals("Deactivated successful")){
+            return ResponseEntity.status(200).body(new ApiRespnse("Deactivated successful"));
+        }
+        return ResponseEntity.status(400).body(new ApiRespnse(response));
+    }
+
+
+    //Extra for admin "Can Search for Active and Not Active users"
+    @GetMapping("/admin/get-users-by-status/{adminId}/{status}")
+    public ResponseEntity<?> getUsersByStatus(@PathVariable String adminId, @PathVariable String status) {
+
+        if (userService.getUsersByStatus(adminId, status) == null) {
+            return ResponseEntity.status(400).body(new ApiRespnse("You are not an Admin or the status value is invalid (use 'active' or 'notActive')"));
+        }
+
+        if (userService.getUsersByStatus(adminId, status).isEmpty()) {
+            return ResponseEntity.status(404).body(new ApiRespnse("No users found with status: " + status));
+        }
+
+        return ResponseEntity.status(200).body(userService.getUsersByStatus(adminId, status));
+    }
+
 }

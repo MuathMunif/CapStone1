@@ -15,6 +15,7 @@ public class MerchantStockService {
     private final MerchantService merchantService;
     private final ProductService productService;
 
+
     ArrayList<MerchantStockModel> merchantStockModels = new ArrayList<>();
 
     public ArrayList<MerchantStockModel> getMerchantStockModels() {
@@ -65,7 +66,6 @@ public class MerchantStockService {
     }
 
 
-    //todo cheeeeeeck
     public String addStock(String merchantId, String productId, int quantity) {
 
         boolean merchantExists = false;
@@ -104,5 +104,61 @@ public class MerchantStockService {
         return "The Stock entry does not exist";
     }
 
+
+    public ArrayList<String> getMerchantsByProduct(String productId) {
+        ArrayList<String> result = new ArrayList<>();
+
+        for (MerchantStockModel stock : merchantStockModels) {
+            if (stock.getProductId().equals(productId)) {
+                String merchantName = " ";
+
+                for (MerchantModel merchant : merchantService.merchants) {
+                    if (merchant.getId().equals(stock.getMerchantId())) {
+                        merchantName = merchant.getName();
+                        break;
+                    }
+                }
+
+                String found = "Merchant: " + merchantName + ", Stock: " + stock.getStock();
+                result.add(found);
+            }
+        }
+
+        return result;
+    }
+
+
+    public ArrayList<ProductModel> filterAvailableProducts(String keyword, Double minPrice, Double maxPrice, String categoryId, String merchantId) {
+        ArrayList<ProductModel> result = new ArrayList<>();
+
+        for (MerchantStockModel stock : merchantStockModels) {
+            if (stock.getStock() > 0) {
+                if (stock.getMerchantId().equals(merchantId)) {
+
+                    ProductModel product = null;
+                    for (ProductModel p : productService.products) {
+                        if (p.getId().equals(stock.getProductId())) {
+                            product = p;
+                            break;
+                        }
+                    }
+
+                    if (product != null) {
+                        if (product.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                            if (product.getPrice() >= minPrice && product.getPrice() <= maxPrice) {
+                                if (product.getCategoryID().equals(categoryId)) {
+                                    if (!result.contains(product)) {
+                                        result.add(product);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 
 }

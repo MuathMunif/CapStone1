@@ -17,7 +17,7 @@ public class MerchantStockModel {
     private String productId;
 
     @NotNull(message = "The merchantId must not be empty ")
-    private String merchantId;// todo check
+    private String merchantId;
 
     @NotNull(message = "The stock must not be empty ")
     private int stock;

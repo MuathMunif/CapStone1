@@ -33,4 +33,6 @@ public class UserModel {
     @Positive(message = "Balance must be a positive number")
     private Double balance;
 
+    private boolean active = true;
+
 }

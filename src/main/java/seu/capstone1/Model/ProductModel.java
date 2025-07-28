@@ -26,4 +26,9 @@ public class ProductModel {
 
     @NotEmpty(message =  "The categoryID must not be empty")
     private String categoryID;
+
+    private int soldCount = 0;
+
+    private double totalIncome;
+
 }

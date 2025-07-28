@@ -19,7 +19,7 @@ public class ProductService {
         return products;
     }
 
-    public boolean addProduct(ProductModel product) {//todo check
+    public boolean addProduct(ProductModel product) {
         for (int i = 0; i < categoryService.categories.size(); i++) {
             if (product.getCategoryID().equals(categoryService.categories.get(i).getId())){
                 products.add(product);
@@ -49,6 +49,26 @@ public class ProductService {
             }
         }
         return false;
+    }
+
+    //-----------CRUD Done-----------------------------//
+
+    public int getProductCount(String id) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getId().equals(id)) {
+                return products.get(i).getSoldCount();
+            }
+        }
+        return 0;
+    }
+
+    public double getProductIncome(String id) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getId().equals(id)) {
+                return products.get(i).getPrice() * products.get(i).getSoldCount();
+            }
+        }
+        return 0;
     }
 
 
